@@ -89,7 +89,7 @@
       var formattedTotal = formatBytes(total);
 
       // The meat of the app
-      var input = fs.createReadStream(filename, {bufferSize: 50 * 1024 * 1024});
+      var input = fs.createReadStream(filename, {bufferSize: 100 * 1024 * 1024});
       input.pipe(hasher);
 
       el.find(".status .in-progress").show();
