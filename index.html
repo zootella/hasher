@@ -48,7 +48,7 @@
 </div>
 
 <button id="choose-file" class="btn btn-primary">Choose File</button>
-<input style="display:none;" id="file-dialog" type="file" />
+<input style="display:none;" id="file-dialog" multiple type="file" />
 
 <script>
   function chooseFile(cb) {
@@ -62,12 +62,18 @@
   $("#choose-file").click(function(e) {
     e.preventDefault();
 
-    chooseFile(function(filename) {
-      var el = $("#template .hash").clone().appendTo("#hashes");
-      var name = path.basename(filename);
-      el.find(".name").text(name);
+    chooseFile(function(filenames) {
+      filenames = filenames.split(";");
 
-      hash(filename, el);
+      for(var i = 0; i < filenames.length; i++) {
+        (function(filename) {
+          var el = $("#template .hash").clone().appendTo("#hashes");
+          var name = path.basename(filename);
+          el.find(".name").text(name);
+
+          hash(filename, el);
+        })(filenames[i]);
+      }
     });
   });
 
