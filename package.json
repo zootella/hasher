@@ -2,11 +2,21 @@
   "name": "hasher",
   "version": "0.0.0",
   "description": "hash everything",
-  "main": "app.js",
+  "main": "index.html",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies" : {
+  },
+  "window": {
+    "toolbar": true,
+    "width": 500,
+    "height": 300,
+    "position": "mouse",
+    "min_width": 400,
+    "min_height": 200,
+    "max_width": 800,
+    "max_height": 600
   },
   "author": "Michael Nutt",
   "license": "BSD"

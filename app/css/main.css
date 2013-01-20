@@ -1,0 +1,36 @@
+body {
+  padding: 20px;
+}
+
+h1 {
+  margin-top: 0;
+  word-wrap: break-word;
+}
+
+.hash {
+  display: none;
+}
+
+.hash .status .progress {
+  margin-bottom: 0;
+}
+
+.hash .status .in-progress {
+  display: none;
+}
+
+.hash .status .controls {
+  float: right;
+  margin-top: 5px;
+}
+
+.hash .done {
+  display: none;
+}
+
+.hash .done .size {
+  float: right;
+}
+.hash .done .result {
+  font-weight: bold;
+}

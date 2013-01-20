@@ -1,0 +1,144 @@
+<html>
+<head>
+  <title>Hasher</title>
+
+  <link href="vendor/bootstrap/css/bootstrap.css" rel="stylesheet">
+  <link href="app/css/main.css" rel="stylesheet">
+
+  <script src="vendor/jquery/jquery-1.9.0.js"></script>
+  <script src="vendor/bootstrap/js/bootstrap.js"></script>
+
+  <script>
+    var fs       = require('fs');
+    var crypto   = require('crypto');
+    var Hasher   = require('./lib/hasher');
+    var path     = require('path');
+  </script>
+</head>
+<body>
+
+<h1>Hasher</h1>
+
+<div class="hash">
+  <div class="status">
+    <div class="progress">
+      <div class="bar"></div>
+    </div>
+
+    <div class="in-progress">
+      <div class="controls">
+        <button id="pause" class="btn">Pause</button>
+      </div>
+
+      <div class="bytes-complete">
+        <span class="bytes"></span> complete
+      </div>
+    </div>
+  </div>
+
+  <div class="done">
+    <div class="size"></div>
+    Hash: <span class="result"></span>
+  </div>
+</div>
+
+<button id="chooseFile">Choose File</button>
+<input style="display:none;" id="fileDialog" type="file" />
+
+<script>
+  function chooseFile(cb) {
+    var chooser = $("#fileDialog");
+    chooser.trigger('click');
+    chooser.one('change', function(evt) {
+      cb($(this).val());
+    });
+  }
+
+  $("#chooseFile").click(function(e) {
+    e.preventDefault();
+
+    chooseFile(function(filename) {
+      $("#chooseFile").hide();
+
+      var name = path.basename(filename);
+      $("h1").text(name);
+      $(".hash").show();
+      $(".hash .done").hide();
+
+      hash(filename);
+    });
+  });
+
+  function hash(filename) {
+    fs.stat(filename, function(err, stats) {
+      if(err) { console.log(err); return; }
+
+      var hasher = new Hasher();
+      var dataLength = 0;
+      var total = stats.size;
+      var formattedTotal = formatBytes(total);
+
+      // The meat of the app
+      var input = fs.createReadStream(filename, {bufferSize: 50 * 1024 * 1024});
+      input.pipe(hasher);
+
+      $(".hash .status").show();
+      $(".hash .status .in-progress").show();
+
+      var bytesDiv = $(".hash .status .bytes");
+      var progressBar = $(".hash .status .progress .bar");
+      var percent = 0;
+
+      hasher.on('data', function(data) {
+        dataLength += data.length;
+        percent = Math.round(dataLength / total * 100);
+        bytesDiv.text(formatBytes(dataLength) + " / " + formattedTotal);
+      });
+
+      function updateProgress() {
+        progressBar.css({width: percent + "%"});
+      }
+      var progressInterval = setInterval(updateProgress, 100);
+
+      // Hasher fires 'end' event when it is complete
+      hasher.on('end', function(hex) {
+        clearInterval(progressInterval);
+        percent = 100;
+        updateProgress();
+
+        $(".hash .done").show();
+        $(".hash .in-progress").hide();
+        $(".hash .done .result").text(hex);
+        $(".hash .done .size").text(formattedTotal);
+        $("#chooseFile").show();
+      });
+
+      $("#pause").click(function(e) {
+        e.preventDefault();
+
+        if(input.paused) {
+          input.resume();
+          $("#pause").text("Pause");
+        } else {
+          input.pause();
+          $("#pause").text("Resume");
+        }
+      });
+    });
+
+  }
+
+  function formatBytes(bytes) {
+    if(bytes < 5000) {
+      return bytes + " B";
+    } else if(bytes < 1.2 * 1024 * 1024) {
+      return (bytes / 1024).toFixed(1) + " KB";
+    } else if(bytes < 1.2 * 1024 * 1024 * 1024) {
+      return (bytes / 1024 / 1024).toFixed(1) + " MB";
+    } else {
+      return (bytes / 1024 / 1024 / 1024).toFixed(1) + " GB";
+    }
+  }
+</script>
+</body>
+</html>
