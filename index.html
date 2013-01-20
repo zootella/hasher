@@ -6,6 +6,7 @@
   <link href="app/css/main.css" rel="stylesheet">
 
   <script src="vendor/jquery/jquery-1.9.0.js"></script>
+  <script src="vendor/jquery/jquery.color-animate.js"></script>
   <script src="vendor/bootstrap/js/bootstrap.js"></script>
 
   <script>
@@ -182,8 +183,10 @@
       });
 
       el.find(".clipboard").click(function(e) {
-        var hash = el.find(".done .result").text();
-        clipboard.set(hash, 'text');
+        var hash = el.find(".done .result");
+        clipboard.set(hash.text(), 'text');
+        hash.css({color: "#0BF"});
+        hash.animate({color: "#000"}, 1000);
       });
     });
 
