@@ -4,11 +4,15 @@ body {
 
 h1 {
   margin-top: 0;
-  word-wrap: break-word;
 }
 
 .hash {
   display: none;
+}
+
+.hash .name {
+  font-weight: bold;
+  word-wrap: break-word;
 }
 
 .hash .status .progress {

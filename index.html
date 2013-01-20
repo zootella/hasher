@@ -20,6 +20,7 @@
 <h1>Hasher</h1>
 
 <div class="hash">
+  <div class="name"></div>
   <div class="status">
     <div class="progress">
       <div class="bar"></div>
@@ -61,7 +62,7 @@
       $("#chooseFile").hide();
 
       var name = path.basename(filename);
-      $("h1").text(name);
+      $(".hash .name").text(name);
       $(".hash").show();
       $(".hash .done").hide();
 
