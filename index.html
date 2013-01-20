@@ -19,58 +19,59 @@
 
 <h1>Hasher</h1>
 
-<div class="hash">
-  <div class="name"></div>
-  <div class="status">
-    <div class="progress">
-      <div class="bar"></div>
-    </div>
+<div id="hashes"></div>
 
-    <div class="in-progress">
-      <div class="controls">
-        <button id="pause" class="btn">Pause</button>
+<div id="template">
+  <div class="hash">
+    <div class="name"></div>
+    <div class="status">
+      <div class="progress">
+        <div class="bar"></div>
       </div>
 
-      <div class="bytes-complete">
-        <span class="bytes"></span> complete
+      <div class="in-progress">
+        <div class="controls">
+          <button class="btn pause">Pause</button>
+        </div>
+
+        <div class="bytes-complete">
+          <span class="bytes"></span> complete
+        </div>
       </div>
     </div>
-  </div>
 
-  <div class="done">
-    <div class="size"></div>
-    Hash: <span class="result"></span>
+    <div class="done">
+      <div class="size"></div>
+      Hash: <span class="result"></span>
+    </div>
   </div>
 </div>
 
-<button id="chooseFile">Choose File</button>
-<input style="display:none;" id="fileDialog" type="file" />
+<button id="choose-file" class="btn btn-primary">Choose File</button>
+<input style="display:none;" id="file-dialog" type="file" />
 
 <script>
   function chooseFile(cb) {
-    var chooser = $("#fileDialog");
+    var chooser = $("#file-dialog");
     chooser.trigger('click');
     chooser.one('change', function(evt) {
       cb($(this).val());
     });
   }
 
-  $("#chooseFile").click(function(e) {
+  $("#choose-file").click(function(e) {
     e.preventDefault();
 
     chooseFile(function(filename) {
-      $("#chooseFile").hide();
-
+      var el = $("#template .hash").clone().appendTo("#hashes");
       var name = path.basename(filename);
-      $(".hash .name").text(name);
-      $(".hash").show();
-      $(".hash .done").hide();
+      el.find(".name").text(name);
 
-      hash(filename);
+      hash(filename, el);
     });
   });
 
-  function hash(filename) {
+  function hash(filename, el) {
     fs.stat(filename, function(err, stats) {
       if(err) { console.log(err); return; }
 
@@ -83,11 +84,10 @@
       var input = fs.createReadStream(filename, {bufferSize: 50 * 1024 * 1024});
       input.pipe(hasher);
 
-      $(".hash .status").show();
-      $(".hash .status .in-progress").show();
+      el.find(".status .in-progress").show();
 
-      var bytesDiv = $(".hash .status .bytes");
-      var progressBar = $(".hash .status .progress .bar");
+      var bytesDiv = el.find(".status .bytes");
+      var progressBar = el.find(".status .progress .bar");
       var percent = 0;
 
       hasher.on('data', function(data) {
@@ -107,22 +107,21 @@
         percent = 100;
         updateProgress();
 
-        $(".hash .done").show();
-        $(".hash .in-progress").hide();
-        $(".hash .done .result").text(hex);
-        $(".hash .done .size").text(formattedTotal);
-        $("#chooseFile").show();
+        el.find(".done").show();
+        el.find(".in-progress").hide();
+        el.find(".done .result").text(hex);
+        el.find(".done .size").text(formattedTotal);
       });
 
-      $("#pause").click(function(e) {
+      el.find(".pause").click(function(e) {
         e.preventDefault();
 
         if(input.paused) {
           input.resume();
-          $("#pause").text("Pause");
+          $(this).text("Pause");
         } else {
           input.pause();
-          $("#pause").text("Resume");
+          $(this).text("Resume");
         }
       });
     });
