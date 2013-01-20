@@ -20,8 +20,12 @@ h1 {
   word-wrap: break-word;
 }
 
+.hash .status {
+  font-size: 0.9em;
+}
+
 .hash .status .progress {
-  margin-bottom: 0;
+  margin-bottom: 5px;
 }
 
 .hash .status .in-progress {
@@ -30,7 +34,6 @@ h1 {
 
 .hash .status .controls {
   float: right;
-  margin-top: 5px;
 }
 
 .hash .done {
