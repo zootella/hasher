@@ -106,11 +106,7 @@
   function hash(filename, el) {
     fs.stat(filename, function(err, stats) {
       if(err) {
-        el.find(".progress").addClass("progress-danger");
-        el.find(".progress .bar").width("100%");
-
-        el.find(".done").show().text(err || "Unknown error");
-        console.log(err);
+        showError(err);
 
         return;
       }
@@ -140,7 +136,20 @@
         bytesDiv.text(formatBytes(dataLength) + " / " + formattedTotal);
         progressBar.css({width: percent + "%"});
       }
-      var progressInterval = setInterval(updateProgress, 40);
+      var progressInterval = setInterval(updateProgress, 70);
+
+      function showError(err) {
+        if(progressInterval) { clearInterval(progressInterval); }
+        el.find(".progress").addClass("progress-danger");
+        el.find(".progress .bar").width("100%");
+
+        el.find(".done").show().text(err.message || "Unknown error");
+        console.log(err);
+      }
+
+      hasher.on('error', function(err) {
+        showError(err.message);
+      });
 
       // Hasher fires 'end' event when it is complete
       hasher.on('end', function(hex) {

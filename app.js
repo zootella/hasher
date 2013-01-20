@@ -15,6 +15,10 @@ hasher.on('end', function(hex) {
   process.exit();
 });
 
+hasher.on('error', function(err) {
+  console.log(err);
+});
+
 // Just some logging
 var dataLength = 0;
 hasher.on('data', function(data) {
