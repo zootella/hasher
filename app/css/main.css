@@ -71,3 +71,7 @@ h1 {
 .hash .done .result {
   font-weight: bold;
 }
+
+.hash .done .clipboard {
+  cursor: pointer;
+}

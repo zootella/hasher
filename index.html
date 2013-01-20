@@ -43,6 +43,7 @@
     <div class="done">
       <div class="size"></div>
       Hash: <span class="result"></span>
+      <img class="clipboard" src="app/img/clipboard.png"/>
     </div>
   </div>
 </div>
@@ -59,12 +60,14 @@
   window.ondragover = function(e) { e.preventDefault(); return false };
   window.ondrop = function(e) { e.preventDefault(); return false };
 
-  var holder = $("body");
-  holder.get(0).ondragover = function () { holder.addClass('hover'); return false; };
-  holder.get(0).ondragout = function () { holder.removeClass('hover'); return false; };
-  holder.get(0).ondrop = function(e) {
+  var gui = require('nw.gui');
+  var clipboard = gui.Clipboard.get();
+
+  document.body.ondragover = function () { $("body").addClass('hover'); return false; };
+  document.body.ondragend = function () { $("body").removeClass('hover'); return false; };
+  document.body.ondrop = function(e) {
     e.preventDefault();
-    holder.removeClass('hover');
+    $("body").removeClass('hover');
 
     var filenames = [];
     for(var i = 0; i < e.dataTransfer.files.length; ++i) {
@@ -176,6 +179,11 @@
           el.find(".progress").addClass("progress-warning");
           $(this).text("Resume");
         }
+      });
+
+      el.find(".clipboard").click(function(e) {
+        var hash = el.find(".done .result").text();
+        clipboard.set(hash, 'text');
       });
     });
 
