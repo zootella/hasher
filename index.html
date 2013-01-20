@@ -47,11 +47,43 @@
   </div>
 </div>
 
+<div class="hover-overlay">
+  <div>Drop to hash</div>
+</div>
+
 <button id="choose-file" class="btn btn-primary">Choose File</button>
 <input style="display:none;" id="file-dialog" multiple type="file" />
 
 <script>
-  function chooseFile(cb) {
+  // prevent default behavior from changing page on dropped file
+  window.ondragover = function(e) { e.preventDefault(); return false };
+  window.ondrop = function(e) { e.preventDefault(); return false };
+
+  var holder = $("body");
+  holder.get(0).ondragover = function () { holder.addClass('hover'); return false; };
+  holder.get(0).ondragout = function () { holder.removeClass('hover'); return false; };
+  holder.get(0).ondrop = function(e) {
+    e.preventDefault();
+    holder.removeClass('hover');
+
+    var filenames = [];
+    for(var i = 0; i < e.dataTransfer.files.length; ++i) {
+      filenames.push(e.dataTransfer.files[i].path);
+    }
+
+    processFiles(filenames);
+  };
+
+  $("#choose-file").click(function(e) {
+    e.preventDefault();
+
+    chooseFiles(function(filenameList) {
+      var filenames = filenameList.split(";");
+      processFiles(filenames);
+    });
+  });
+
+  function chooseFiles(cb) {
     var chooser = $("#file-dialog");
     chooser.trigger('click');
     chooser.one('change', function(evt) {
@@ -59,23 +91,17 @@
     });
   }
 
-  $("#choose-file").click(function(e) {
-    e.preventDefault();
+  function processFiles(filenames) {
+    for(var i = 0; i < filenames.length; i++) {
+      (function(filename) {
+        var el = $("#template .hash").clone().appendTo("#hashes");
+        var name = path.basename(filename);
+        el.find(".name").text(name);
 
-    chooseFile(function(filenames) {
-      filenames = filenames.split(";");
-
-      for(var i = 0; i < filenames.length; i++) {
-        (function(filename) {
-          var el = $("#template .hash").clone().appendTo("#hashes");
-          var name = path.basename(filename);
-          el.find(".name").text(name);
-
-          hash(filename, el);
-        })(filenames[i]);
-      }
-    });
-  });
+        hash(filename, el);
+      })(filenames[i]);
+    }
+  }
 
   function hash(filename, el) {
     fs.stat(filename, function(err, stats) {
@@ -107,13 +133,14 @@
       hasher.on('data', function(data) {
         dataLength += data.length;
         percent = Math.round(dataLength / total * 100);
-        bytesDiv.text(formatBytes(dataLength) + " / " + formattedTotal);
       });
 
       function updateProgress() {
+        if(input.paused) { return; }
+        bytesDiv.text(formatBytes(dataLength) + " / " + formattedTotal);
         progressBar.css({width: percent + "%"});
       }
-      var progressInterval = setInterval(updateProgress, 100);
+      var progressInterval = setInterval(updateProgress, 40);
 
       // Hasher fires 'end' event when it is complete
       hasher.on('end', function(hex) {

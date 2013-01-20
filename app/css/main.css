@@ -2,6 +2,31 @@ body {
   padding: 20px;
 }
 
+.hover-overlay {
+  display: none;
+}
+
+body.hover .hover-overlay {
+  position: absolute;
+  z-index: 10;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background-color: rgba(0,0,0,0.8);
+  text-align: center;
+  display: -webkit-box;
+  -webkit-box-align: center;
+}
+
+.hover-overlay div {
+  text-align: center;
+  color: #FFF;
+  font-weight: bold;
+  font-size: 3em;
+  margin: auto;
+}
+
 h1 {
   margin-top: 0;
 }
