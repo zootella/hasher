@@ -9,8 +9,8 @@
   "dependencies" : {
   },
   "window": {
-    "toolbar": true,
-    "width": 500,
+    "toolbar": false,
+    "width": 550,
     "height": 300,
     "position": "mouse",
     "min_width": 500,
