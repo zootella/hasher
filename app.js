@@ -11,27 +11,38 @@ input.pipe(hasher);
 
 // Hasher fires 'end' event when it is complete
 hasher.on('end', function(hex) {
-  console.log("sha1 sum is: " + hex);
-  process.exit();
+	console.log("sha1 sum is: " + hex);
+	process.exit();
 });
 
 // Just some logging
 var dataLength = 0;
 hasher.on('data', function(data) {
-  dataLength += data.length;
-  console.log('hashed ' + dataLength + ' bytes');
+	dataLength += data.length;
+	console.log('hashed ' + dataLength + ' bytes');
 });
 
 keyboard.on('p', function() {
- if(!input.paused) {
-    console.log('pausing');
-    input.pause();
-  }
+	if(!input.paused) {
+		console.log('pausing');
+		input.pause();
+	}
 });
 
 keyboard.on('r', function() {
-  if(input.paused) {
-    console.log('resuming');
-    input.resume();
-  }
+	if(input.paused) {
+		console.log('resuming');
+		input.resume();
+	}
 });
+
+
+
+
+//change this in steps without breaking it
+//make the command line dialog box which can take input and show progress in place
+//be able to run it standalone from the command line, and in a unit test from nodeunit
+//you don't need pause and resume, just range, progress and stop
+
+
+
